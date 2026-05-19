@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>The Battery People — Battery Finder</title>
+<style>
+:root{
+  --tbp-black:#030507;
+  --tbp-charcoal:#0b0f14;
+  --tbp-panel:#10151b;
+  --tbp-blue:#08a8ff;
+  --tbp-blue-dark:#006dcc;
+  --tbp-white:#ffffff;
+  --tbp-silver:#d9d9d9;
+  --tbp-muted:#b8c2cc;
+  --tbp-border:rgba(8,168,255,.65);
+  --tbp-glow:0 0 18px rgba(8,168,255,.65),0 0 42px rgba(8,168,255,.25);
+  --tbp-radius:18px;
+  --line:rgba(255,255,255,.13);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  background:#000;
+  color:var(--tbp-white);
+  font-family:Arial,Helvetica,sans-serif;
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-3;
+  background:
+    radial-gradient(circle at 72% 14%, rgba(8,168,255,.17), transparent 30%),
+    radial-gradient(circle at 20% 54%, rgba(8,168,255,.08), transparent 26%),
+    linear-gradient(180deg,#020305 0%,#070a0e 52%,#020305 100%);
+}
+body::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:-2;
+  opacity:.16;
+  background-image:
+    linear-gradient(30deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28)),
+    linear-gradient(150deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28)),
+    linear-gradient(30deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28)),
+    linear-gradient(150deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28));
+  background-size:46px 80px;
+  background-position:0 0,0 0,23px 40px,23px 40px;
+  pointer-events:none;
+}
+.grid-bg{
+  position:fixed;
+  inset:0;
+  z-index:-1;
+  pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(0,0,0,.98) 0%,rgba(0,0,0,.72) 48%,rgba(0,0,0,.44) 100%),
+    radial-gradient(circle at 79% 45%,rgba(8,168,255,.26),transparent 32%);
+  opacity:.9;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 17px 56px}
+.hero{
+  position:relative;
+  padding:62px 0 22px;
+  border-bottom:1px solid rgba(8,168,255,.35);
+  overflow:hidden;
+}
+.hero::before,.finder-card::before,.product::before,.summary::before,.trust::before,.pills::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:.13;
+  background-image:
+    linear-gradient(30deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28)),
+    linear-gradient(150deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28)),
+    linear-gradient(30deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28)),
+    linear-gradient(150deg,rgba(8,168,255,.28) 12%,transparent 12.5%,transparent 87%,rgba(8,168,255,.28) 87.5%,rgba(8,168,255,.28));
+  background-size:46px 80px;
+  background-position:0 0,0 0,23px 40px,23px 40px;
+  pointer-events:none;
+}
+.hero>*{position:relative;z-index:1}
+.hero h1{
+  margin:0 0 18px;
+  font-size:clamp(42px,6.2vw,82px);
+  line-height:.98;
+  letter-spacing:-2.5px;
+  font-weight:950;
+  text-transform:uppercase;
+  font-style:italic;
+  overflow:visible;
+  text-shadow:0 3px 0 rgba(0,0,0,.45),0 0 22px rgba(255,255,255,.10);
+}
+.hero h1 span{
+  display:block;
+  background:linear-gradient(180deg,#42c6ff,#0078e3 72%,#0057a7);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  text-shadow:0 0 26px rgba(8,168,255,.35);
+}
+.hero p{font-size:clamp(18px,2vw,25px);line-height:1.35;color:#f2f2f2;max-width:680px;margin:0 0 22px}
+.finder-card{
+  position:relative;
+  margin-top:30px;
+  overflow:hidden;
+  border:2px solid var(--tbp-border);
+  background:linear-gradient(180deg,rgba(22,28,34,.88),rgba(5,7,10,.96));
+  border-radius:12px;
+  padding:24px;
+  box-shadow:var(--tbp-glow),inset 0 0 22px rgba(255,255,255,.04);
+}
+.finder-card>*{position:relative;z-index:1}
+.finder-title{display:flex;gap:14px;align-items:center;margin-bottom:18px}
+.iconbox{height:48px;width:48px;border-radius:10px;background:linear-gradient(180deg,#149cff,#005dcc);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:950;box-shadow:var(--tbp-glow)}
+.finder-title h2{margin:0;font-size:24px;text-transform:uppercase;font-style:italic;font-weight:950;letter-spacing:-.4px}
+.finder-title p{margin:3px 0 0;color:var(--tbp-muted);font-size:14px}
+.fields{display:grid;grid-template-columns:repeat(4,minmax(0,1fr)) auto;gap:14px;align-items:end}
+label{display:grid;gap:8px;text-transform:uppercase;color:#f3f8ff;font-size:12px;font-weight:950;letter-spacing:.1em;font-style:italic}
+select{
+  height:52px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.18);
+  background:#0c1117;
+  color:white;
+  padding:0 14px;
+  font-size:15px;
+  outline:none;
+  box-shadow:inset 0 0 16px rgba(8,168,255,.05);
+}
+select:focus{border-color:var(--tbp-blue);box-shadow:0 0 0 3px rgba(8,168,255,.14)}
+.findbtn{
+  height:52px;
+  border:2px solid var(--tbp-blue);
+  border-radius:8px;
+  background:linear-gradient(180deg,#149cff,#005dcc);
+  color:white;
+  font-weight:950;
+  text-transform:uppercase;
+  font-style:italic;
+  letter-spacing:.4px;
+  padding:0 22px;
+  cursor:pointer;
+  box-shadow:var(--tbp-glow);
+}
+.helper{margin-top:14px;color:var(--tbp-muted);font-size:14px;line-height:1.45}
+.pills{
+  position:relative;
+  margin-top:18px;
+  overflow:auto;
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(0,0,0,.82);
+  border-radius:12px;
+  padding:14px;
+  display:flex;
+  gap:12px;
+}
+.pill{
+  position:relative;
+  z-index:1;
+  border:2px solid rgba(8,168,255,.65);
+  background:linear-gradient(180deg,rgba(22,28,34,.86),rgba(5,7,10,.94));
+  border-radius:10px;
+  color:#fff;
+  padding:12px 18px;
+  font-weight:950;
+  font-style:italic;
+  text-transform:uppercase;
+  letter-spacing:.7px;
+  white-space:nowrap;
+  box-shadow:inset 0 0 20px rgba(8,168,255,.08);
+}
+.pill:first-child{background:linear-gradient(180deg,#149cff,#005dcc);box-shadow:var(--tbp-glow)}
+.summary{
+  position:relative;
+  overflow:hidden;
+  margin-top:24px;
+  display:flex;
+  justify-content:space-between;
+  gap:18px;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(22,28,34,.86),rgba(5,7,10,.94));
+  padding:22px;
+  box-shadow:inset 0 0 22px rgba(255,255,255,.04);
+}
+.summary>*{position:relative;z-index:1}
+.summary h3{margin:4px 0;font-size:clamp(24px,3vw,34px);font-weight:950;text-transform:uppercase;font-style:italic;letter-spacing:-.7px}.summary p,.small{color:var(--tbp-muted);margin:0;line-height:1.45}.summary .small:first-child{color:var(--tbp-blue);font-size:12px;text-transform:uppercase;letter-spacing:2.5px;font-weight:950}
+.results{margin-top:16px;display:grid;grid-template-columns:1fr;gap:16px}
+.product{
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.16);
+  background:linear-gradient(180deg,rgba(22,28,34,.9),rgba(5,7,10,.96));
+  box-shadow:inset 0 0 22px rgba(255,255,255,.04),0 24px 70px rgba(0,0,0,.35);
+}
+.product>*{position:relative;z-index:1}
+.product-inner{display:grid;grid-template-columns:1fr;gap:16px;padding:22px}
+.prod-img{
+  min-height:120px;
+  border:1px dashed rgba(8,168,255,.5);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#7890aa;
+  background:rgba(255,255,255,.03);
+  box-shadow:inset 0 0 22px rgba(8,168,255,.05);
+}
+.prod-img b{display:block;text-transform:uppercase;letter-spacing:.22em;color:#73c9ff;font-size:10px;margin-top:10px}.prod-img span{display:block;margin-top:4px;color:var(--tbp-muted);font-size:12px}
+.badge{display:inline-flex;background:linear-gradient(180deg,#149cff,#005dcc);border-radius:7px;padding:7px 12px;text-transform:uppercase;letter-spacing:.13em;font-size:10px;font-weight:950;font-style:italic;box-shadow:var(--tbp-glow)}
+.product h4{margin:13px 0 4px;font-size:26px;line-height:1.05;font-weight:950;text-transform:uppercase;font-style:italic;letter-spacing:-.5px}.product p{line-height:1.45}
+.stats{display:grid;grid-template-columns:1fr;background:rgba(0,0,0,.28);border-radius:12px;overflow:hidden;margin-top:18px;border:1px solid rgba(255,255,255,.14)}
+.stat{padding:14px 16px;text-align:left;border-right:0;border-bottom:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;gap:16px;align-items:center}.stat:last-child{border-bottom:0}.stat b{font-size:18px;text-align:right;overflow-wrap:anywhere}.stat span{display:block;color:#fff;font-size:11px;text-transform:uppercase;letter-spacing:.11em;margin-top:0;white-space:nowrap;font-weight:950;font-style:italic}
+.product-foot{display:flex;gap:10px;align-items:center;border-top:1px solid rgba(255,255,255,.13);padding:17px 22px;flex-wrap:wrap}.price{font-size:30px;font-weight:950;margin-right:auto;min-width:220px;font-style:italic}.price span{font-size:13px;color:var(--tbp-muted);font-style:normal}.btn{border-radius:8px;padding:13px 16px;font-weight:950;text-transform:uppercase;font-style:italic;letter-spacing:.3px;text-decoration:none;color:white;border:2px solid var(--tbp-blue);background:rgba(0,0,0,.55)}.btn.primary{background:linear-gradient(180deg,#149cff,#005dcc);border-color:var(--tbp-blue);box-shadow:var(--tbp-glow)}
+.notice{margin-top:20px;border:1px solid rgba(255,191,0,.3);background:rgba(255,191,0,.08);color:#ffefbd;border-radius:12px;padding:18px;line-height:1.45}.trust{position:relative;overflow:hidden;margin-top:18px;display:grid;grid-template-columns:repeat(3,1fr);gap:0;border:1px solid rgba(255,255,255,.16);background:linear-gradient(180deg,rgba(22,28,34,.86),rgba(5,7,10,.94));border-radius:12px}.trust>*{position:relative;z-index:1}.trust div{padding:20px;border-right:1px solid rgba(255,255,255,.13)}.trust div:last-child{border-right:0}.trust b{color:#73c9ff;text-transform:uppercase;font-style:italic;letter-spacing:.2px}@media(max-width:900px){.fields,.results,.product-inner,.trust{grid-template-columns:1fr}.summary{align-items:flex-start;flex-direction:column}.product-foot{flex-wrap:wrap}.price{width:100%}.hero{padding-top:42px}.finder-card{padding:18px}.trust div{border-right:0;border-bottom:1px solid rgba(255,255,255,.13)}.trust div:last-child{border-bottom:0}}
+</style>
+</head>
+<body><div class="grid-bg"></div><main class="wrap"><section class="hero"><h1>Find the Right<br><span>Battery</span> Fast</h1><p>Compare Neuton Power and Power Crank options to get the perfect fit for your vehicle.</p><div class="finder-card"><div class="finder-title"><div class="iconbox">⌕</div><div><h2>Find Your Battery</h2><p>Find by make, model, variant and year</p></div></div><div class="fields"><label>Make<select id="make"></select></label><label>Model<select id="model"></select></label><label>Variant / Description<select id="variant"></select></label><label>Year<select id="year"></select></label><button class="findbtn" id="find">Find My Battery</button></div><div class="helper">✓ Results are based on available guide data. Always confirm terminal layout and existing battery details for critical fitments.</div></div></section><div class="pills"><span class="pill">Automotive</span><span class="pill">AGM</span><span class="pill">EFB</span><span class="pill">Stop Start</span><span class="pill">Deep Cycle</span><span class="pill">Marine</span><span class="pill">Lithium</span><span class="pill">Motor Bike</span></div><section id="output"></section></main>
+<script src="battery-finder-data.js"></script>
+<script>
+const FITMENTS = window.FITMENTS || [];
+const $ = id => document.getElementById(id);
+function uniq(arr){return [...new Set(arr.filter(Boolean))].sort((a,b)=>String(a).localeCompare(String(b),undefined,{numeric:true}))}
+function optionize(el, values, placeholder){el.innerHTML='<option value="">'+placeholder+'</option>'+values.map(v=>'<option>'+escapeHtml(v)+'</option>').join('')}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function money(v){const n=Number(v);return Number.isFinite(n)?n.toLocaleString('en-AU',{minimumFractionDigits:2,maximumFractionDigits:2}):escapeHtml(v||'-')}
+function inYear(fit, year){if(!year)return true; const y=Number(year); return y>=Number(fit.yearFrom||0)&&y<=Number(fit.yearTo||9999)}
+function variantLabel(f){return [f.model, f.series, f.engineTrim, f.fuel, f.yearRange].filter(Boolean).join(' • ')}
+function init(){optionize($('make'), uniq(FITMENTS.map(f=>f.make)), 'Select make'); $('make').value='TOYOTA'; updateModels(); $('model').value='Hilux'; updateVariants(); updateYears(); renderResults();}
+function filteredBase(){const m=$('make').value, model=$('model').value; return FITMENTS.filter(f=>(!m||f.make===m)&&(!model||f.model===model));}
+function updateModels(){optionize($('model'), uniq(FITMENTS.filter(f=>!$('make').value||f.make===$('make').value).map(f=>f.model)), 'Select model'); updateVariants(); updateYears();}
+function updateVariants(){const vals=uniq(filteredBase().map(variantLabel)); optionize($('variant'), vals, 'Any variant');}
+function updateYears(){let rows=filteredBase(); const v=$('variant').value; if(v)rows=rows.filter(f=>variantLabel(f)===v); const years=[]; rows.forEach(f=>{let from=Number(f.yearFrom||0), to=Number(f.yearTo||new Date().getFullYear()); if(to===9999)to=new Date().getFullYear()+1; for(let y=Math.max(1950,from); y<=Math.min(to,new Date().getFullYear()+1); y++)years.push(String(y));}); optionize($('year'), uniq(years).reverse(), 'Any year');}
+function renderResults(){let rows=filteredBase(); const v=$('variant').value, y=$('year').value; if(v)rows=rows.filter(f=>variantLabel(f)===v); rows=rows.filter(f=>inYear(f,y)); const out=$('output'); if(!rows.length){out.innerHTML='<div class="notice"><b>No exact match found yet.</b><br>Ask us to confirm by rego, VIN or a photo of the existing battery.</div>';return} const result=rows[0]; const extras=rows.length>1?`<p class="small">Showing best first match. ${rows.length} possible rows match this selection — choose variant/year to narrow it down.</p>`:''; out.innerHTML=`<div class="summary"><div><p class="small">Best Match for Your Vehicle</p><h3>${escapeHtml(result.make)} ${escapeHtml(result.model)} ${escapeHtml(y||result.yearRange||'')}</h3><p>${escapeHtml([result.series,result.engineTrim,result.fuel].filter(Boolean).join(' • ')||'Fitment guide match')} • Fitment: ${escapeHtml(result.sourceCode||result.neutonPN||'Confirm')}</p>${extras}</div><button class="btn">Edit Vehicle</button></div><div class="results">${(result.brandOptions||[]).map(productCard).join('')}</div><div class="trust"><div><b>Aussie Owned & Operated</b><br><span class="small">Local experts you can trust</span></div><div><b>Fast Local Delivery</b><br><span class="small">Get it when you need it</span></div><div><b>Quality Brands</b><br><span class="small">Neuton Power & Power Crank</span></div></div>`;}
+function productCard(o){const shop=o.url?`<a class="btn primary" href="${escapeHtml(o.url)}" target="_blank" rel="noopener">Shop Battery</a>`:`<a class="btn primary" href="#">Ask for Price</a>`; const media=o.imageUrl?`<img src="${escapeHtml(o.imageUrl)}" alt="${escapeHtml(o.name||o.sku||'Battery product image')}" loading="lazy">`:`<div>🔋<b>Product Image</b><span>${escapeHtml(o.brand)}</span></div>`; return `<article class="product"><div class="product-inner"><div class="prod-img">${media}</div><div><span class="badge">${escapeHtml(o.matchConfidence||'Option')}</span><h4>${escapeHtml(o.name||o.sku)}</h4><p class="small">SKU: ${escapeHtml(o.sku||'')}</p><div class="stats"><div class="stat"><span>CCA</span><b>${escapeHtml(o.cca||'-')}</b></div><div class="stat"><span>Dimensions</span><b>${escapeHtml(o.dimensions||'-')}</b></div><div class="stat"><span>Warranty</span><b>${escapeHtml(o.warranty||'36')} Months</b></div><div class="stat"><span>Type</span><b>${escapeHtml(o.category||'-')}</b></div></div></div></div><div class="product-foot"><div class="price">$${money(o.price)} <span>Inc. GST</span></div>${shop}<a class="btn" href="tel:0494636827">Ask Us</a></div></article>`}
+$('make').addEventListener('change',()=>{updateModels();renderResults()});$('model').addEventListener('change',()=>{updateVariants();updateYears();renderResults()});$('variant').addEventListener('change',()=>{updateYears();renderResults()});$('year').addEventListener('change',renderResults);$('find').addEventListener('click',renderResults);init();
+</script></body></html>
